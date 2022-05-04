@@ -39,6 +39,30 @@ async function run() {
     res.send(result);
   });
 
+  app.put("/inventory/plus/:id", async (req, res) => {
+    const id = req.params.id;
+    const quantity = parseInt(req.body.quantity);
+    const query = { _id: ObjectId(id) };
+    const inventory = await inventoryCollection.findOne(query);
+
+    const newQuantity = quantity + inventory.quantity;
+    const updatedInventory = await inventoryCollection.updateOne(query, {
+      $set: { quantity: newQuantity },
+    });
+
+    res.send(updatedInventory);
+  });
+
+  app.put("/inventory/minus/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const inventory = await inventoryCollection.updateOne(query, {
+      $inc: { quantity: -1 },
+    });
+
+    res.send(inventory);
+  });
+
   app.delete("/inventory/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
