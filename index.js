@@ -1,4 +1,5 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
@@ -26,6 +27,15 @@ async function run() {
     res.send(inventorys);
   });
 
+  app.get("/myitem", async (req, res) => {
+    const token = req.headers.token;
+    const { email } = jwt.verify(token, process.env.JWT_SECRET);
+    const query = { email };
+    const cursor = inventoryCollection.find(query);
+    const inventorys = await cursor.toArray();
+    res.send(inventorys);
+  });
+
   app.get("/inventory/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
@@ -35,6 +45,7 @@ async function run() {
 
   app.post("/inventory", async (req, res) => {
     const newInventory = req.body;
+    newInventory.quantity = parseInt(newInventory.quantity);
     const result = await inventoryCollection.insertOne(newInventory);
     res.send(result);
   });
@@ -68,6 +79,12 @@ async function run() {
     const query = { _id: ObjectId(id) };
     const result = await inventoryCollection.deleteOne(query);
     res.send(result);
+  });
+  app.post("/login", async (req, res) => {
+    console.log(req.body);
+    const token = jwt.sign(req.body, process.env.JWT_SECRET);
+
+    res.send({ token });
   });
 }
 run().catch(console.dir);
