@@ -27,6 +27,7 @@ async function run() {
     res.send(inventorys);
   });
 
+  //   api for my item
   app.get("/myitem", async (req, res) => {
     const token = req.headers.token;
     const { email } = jwt.verify(token, process.env.JWT_SECRET);
@@ -36,6 +37,7 @@ async function run() {
     res.send(inventorys);
   });
 
+  //   api for single data load
   app.get("/inventory/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
@@ -43,6 +45,7 @@ async function run() {
     res.send(inventory);
   });
 
+  //   api for add item
   app.post("/inventory", async (req, res) => {
     const newInventory = req.body;
     newInventory.quantity = parseInt(newInventory.quantity);
@@ -50,6 +53,7 @@ async function run() {
     res.send(result);
   });
 
+  //   api for restock button
   app.put("/inventory/plus/:id", async (req, res) => {
     const id = req.params.id;
     const quantity = parseInt(req.body.quantity);
@@ -64,6 +68,7 @@ async function run() {
     res.send(updatedInventory);
   });
 
+  //   api for delivery button
   app.put("/inventory/minus/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
@@ -74,14 +79,16 @@ async function run() {
     res.send(inventory);
   });
 
+  //   api for remove item
   app.delete("/inventory/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: ObjectId(id) };
     const result = await inventoryCollection.deleteOne(query);
     res.send(result);
   });
+
+  //   api for jwt
   app.post("/login", async (req, res) => {
-    console.log(req.body);
     const token = jwt.sign(req.body, process.env.JWT_SECRET);
 
     res.send({ token });
