@@ -91,7 +91,7 @@ async function run() {
   //   api for jwt
   app.post("/login", async (req, res) => {
     const token = jwt.sign(req.body, process.env.JWT_SECRET);
-
+    console.log(token);
     res.send({ token });
   });
 }
